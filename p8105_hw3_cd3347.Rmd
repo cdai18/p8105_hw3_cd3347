@@ -7,6 +7,7 @@ output: github_document
 ```{r setup}
 
 library(tidyverse)
+library(patchwork)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -142,12 +143,45 @@ Modifying the data
 excellent = 
   brfss_clean %>% 
   filter(response == "Excellent") %>% 
-  group_by(year, state, state_county) %>% 
+  group_by(year, state) %>% 
   summarize(data_value_avg = mean(data_value))
 ```
 
+Make the spaghetti plot:
 
+```{r}
+excellent %>% 
+  ggplot(aes(x = year, y = data_value_avg, group = state)) +  
+  geom_line()
+```
 
+Make the two-panel plot
+
+For 2006:
+
+```{r}
+data_value2006 = 
+  brfss_clean %>% 
+    filter(year == 2006 & state == "NY") %>% 
+    ggplot(aes(x = response, y = data_value)) + 
+    geom_boxplot()
+```
+
+For 2010:
+
+```{r}
+data_value2010 = 
+  brfss_clean %>% 
+    filter(year == 2010 & state == "NY") %>% 
+    ggplot(aes(x = response, y = data_value)) + 
+    geom_boxplot()
+```
+
+Now patch them together:
+
+```{r}
+data_value2006 + data_value2010
+```
 
 
 
